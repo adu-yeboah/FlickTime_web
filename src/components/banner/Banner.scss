@@ -1,0 +1,64 @@
+.banner{
+    position: relative;
+    margin-top: 1rem;
+    width: 100%;
+    height: 80vh;
+
+    .banner-image {
+        width: 100%;
+        height: 80vh;
+        border-radius: 10em;
+        transition: all .5s;
+
+
+        img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 1em;
+        }
+
+        &:hover {
+            img{
+                // transform: scale(1.01);
+                transition: all .5s;
+            }
+        }
+    }
+
+    .overlay {
+        position: absolute;
+        top: 50%;
+        width: 50%;
+        padding: 2em;
+        background: rgba($color: #000000, $alpha: 0.2);
+
+        .title {
+            font-size: 2rem;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .inden {
+            span{
+                color: var(--primary-color);
+            }
+            width: 100%;
+            gap: 1em;
+
+            .ind{
+                align-items: center;
+                gap: 7px;
+            }
+        }
+
+        .summary{
+            width: 100%;
+            height: 20vh;
+            line-height: 2em;
+            // overflow: hidden;
+            // white-space: nowrap;
+            // text-overflow: ellipsis;
+        }
+    }
+}

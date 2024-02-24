@@ -1,0 +1,23 @@
+.section{
+    margin-top: 5em;
+    margin-bottom: 2em ;
+    .head{
+        font-size: 1.6rem;
+        color: var(--primary-color);
+        font-weight: 600;
+    }
+}
+
+.section.t{
+    margin-top: 2em;
+    margin-bottom: .5em ;
+}
+
+.mySwiper{
+    gap: 2em;
+}
+
+// .swiper-wrapper {
+//     display: flex;
+//     width: 100%;
+// }

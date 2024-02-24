@@ -1,0 +1,13 @@
+.filter {
+    margin-top: 3rem;
+    margin-bottom: 5rem;
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--primary-color-2);
+    .search {
+        padding: 1.2em;
+        width: 300px;
+        border-radius: 10px;
+    }
+}

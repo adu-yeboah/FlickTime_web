@@ -1,0 +1,43 @@
+.navbar{
+    background: var(--primary-color-2);
+    padding: 1.3em;
+
+    .navbarWrapper{
+        width: 100%;
+        justify-content: space-between;
+
+        .logo {
+            font-size: 1.8rem;
+            span {
+                font-size: 2rem;
+                color: var(--primary-color);
+                text-transform: uppercase;
+                font-weight: 600;
+            }
+        }
+
+        .nav{
+            gap: 1em;
+
+            a{
+                font-size: 1.2rem;
+                transition: all .5s;
+
+                &:hover {
+                    color: var(--primary-color);
+                    transition: all .5s;
+                }
+            }
+        }
+
+        .search {
+            font-size: 1.5rem;
+            cursor: pointer;
+
+            &:hover {
+                color: var(--primary-color);
+                transition: all .5s;
+            }
+        }
+    }
+}

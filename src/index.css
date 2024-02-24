@@ -1,0 +1,116 @@
+:root {
+  --primary-color: rgb(239, 178, 58);
+  --primary-color-2: rgb(157, 157, 157);
+  --main-color: #000000;
+  --secondary-color: #ffffff;
+
+  --light-green: #b2e663;
+  --danger-color: #d00000;
+  --sucess-color: #3a5a40;
+
+
+  --dark-color: rgb(0, 0, 0);
+
+  --font-larger: 2.5rem;
+  --font-large: 2.1rem;
+  --font-medium: 1.94rem;
+  --font-small: 1.6rem;
+  --normal: 1.3rem;
+  --font-smaller: 1.1rem;
+
+  --border-box: 1px solid hsl(0, 0%, 93%);
+  --box-shadow: 0 0 10px #fff;
+  --box-shadow-2: 0 0 10px hsla(0, 0%, 0%, 0.25);
+}
+
+
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+input::placeholder {
+  font: inherit;
+}
+
+input, button{
+  border: none;
+  outline: none;
+}
+
+img {
+  max-width: 100%;
+  vertical-align: middle;
+}
+
+ul, li {
+  list-style: none;
+}
+
+
+i {
+  cursor: pointer;
+}
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  transition: all .5s;
+}
+body{
+  font-family: 'Fira Sans', sans-serif;
+  text-transform: capitalize;
+  transition: all .5s;
+}
+
+html {
+  overflow-x: hidden;
+  transition: all .5s;
+  font-family: sans-serif;
+}
+
+html::-webkit-scrollbar {
+  width: .7rem;
+}
+
+.flex-wrap {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.flex-item {
+  display: flex;
+  align-items: center;
+}
+
+.flex-col {
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+}
+
+.container {
+  width: 1400px;
+  margin: 0 auto;
+  padding: 0 1em;
+}
+
+.containerD{
+  margin-left: 180px;
+}
+.containerDi{
+  padding-left: 180px;
+
+}
