@@ -1,33 +1,46 @@
-import React from 'react'
-import './Navbar.scss'
-import { IoMdSearch } from "react-icons/io";
-import { Link } from 'react-router-dom'
+import React, { useState } from 'react';
+import './Navbar.scss';
+import { IoMdSearch } from 'react-icons/io';
+import { FaBars, FaTimes } from 'react-icons/fa';
+import { Link } from 'react-router-dom';
 
 function Navbar() {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
+
   return (
-    <div>
-      <div className="navbar">
-        <div className="container">
-            <div className="navbarWrapper flex-item">
+    <nav className="navbar">
+      <div className="container">
+        <div className="navbarWrapper flex-item">
+          <div className="logo">
+            <Link to="/">
+              <span>f</span>lick<span>t</span>ime
+            </Link>
+          </div>
 
-                <div className="logo">
-                    <span>f</span>lick<span>t</span>ime
-                </div>
+          {/* Navigation Links */}
+          <div className={`nav flex-item ${isMobileMenuOpen ? 'active' : ''}`}>
+            <Link to="/" onClick={() => setIsMobileMenuOpen(false)}>Home</Link>
+            <Link to="/movies" onClick={() => setIsMobileMenuOpen(false)}>Movies</Link>
+            <Link to="/tv" onClick={() => setIsMobileMenuOpen(false)}>TV Shows</Link>
+          </div>
 
-                <div className="nav flex-item">
-                    <Link to='/'>home</Link>
-                    <Link to='/movies'>movies</Link>
-                    <Link to='/tv'>tv-shows</Link>
-                </div>
+          {/* Search Icon */}
+          <Link to="/search" className="search">
+            <IoMdSearch />
+          </Link>
 
-                <Link to='/search' className="search">
-                <IoMdSearch />
-                </Link>
-            </div>
+          {/* Hamburger Toggle for Mobile */}
+          <div className="mobile-toggle" onClick={toggleMobileMenu}>
+            {isMobileMenuOpen ? <FaTimes /> : <FaBars />}
+          </div>
         </div>
       </div>
-    </div>
-  )
+    </nav>
+  );
 }
 
-export default Navbar
+export default Navbar;
