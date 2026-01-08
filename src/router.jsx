@@ -1,9 +1,11 @@
-import {createBrowserRouter} from "react-router-dom";
-import Index from "./views/home";
+import { createBrowserRouter } from "react-router-dom";
 import Movies from "./views/movie/movies";
 import MovieDetails from "./views/movieDetails/movieDetails";
 import Search from "./views/search/Search";
 import Tv from "./views/tv/Tv";
+import Index from "./views/home/Index";
+
+import Watchlist from "./views/watchlist/Watchlist";
 
 const router = createBrowserRouter([
     {
@@ -25,6 +27,10 @@ const router = createBrowserRouter([
     {
         path: '/search',
         element: <Search />
+    },
+    {
+        path: '/watchlist',
+        element: <Watchlist />
     },
 ]);
 
