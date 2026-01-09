@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import { useState, useContext } from 'react';
 import { ApiContext } from '../context/apiContext';
 import { FiSmile, FiFrown, FiMeh, FiHeart, FiZap, FiCoffee, FiX } from 'react-icons/fi';
 import Card from './Card';
@@ -11,7 +11,6 @@ const MoodMatcher = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [step, setStep] = useState(0);
     const [mood, setMood] = useState(null);
-    const [genre, setGenre] = useState(null);
     const [recommendations, setRecommendations] = useState([]);
 
     const allMovies = [...movies, ...popularMovies];
@@ -26,8 +25,7 @@ const MoodMatcher = () => {
         romantic: [10749, 35] // Romance, Comedy
     };
 
-    const handleMatch = (selectedGenre) => {
-        setGenre(selectedGenre);
+    const handleMatch = () => {
         setStep(2);
 
         // "AI" Logic: Filter movies based on mood (genre ids)

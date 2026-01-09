@@ -1,4 +1,5 @@
-import { createContext, useEffect, useState } from 'react';
+import { createContext, useEffect, useState, useCallback } from 'react';
+import PropTypes from 'prop-types';
 import apiDetails from "../api/movieApi";
 
 export const ApiContext = createContext({});
@@ -19,7 +20,7 @@ export const ApiContextProvider = ({ children }) => {
     const [tvPage, setTvPage] = useState(1);
     const [isLoadingMore, setIsLoadingMore] = useState(false);
 
-    const fetchData = async (endpoint, setter) => {
+    const fetchData = useCallback(async (endpoint, setter) => {
         try {
             const response = await fetch(`${apiDetails.base_url}${endpoint}&api_key=${apiDetails.api_key}`);
             if (!response.ok) throw new Error('Network response was not ok');
@@ -29,9 +30,9 @@ export const ApiContextProvider = ({ children }) => {
             console.error(`Error fetching ${endpoint}:`, err);
             setError(err.message);
         }
-    };
+    }, []);
 
-    const fetchMoreData = async (endpoint, page, currentData, setter, pageSetter) => {
+    const fetchMoreData = useCallback(async (endpoint, page, currentData, setter, pageSetter) => {
         if (isLoadingMore) return;
         setIsLoadingMore(true);
         try {
@@ -46,12 +47,12 @@ export const ApiContextProvider = ({ children }) => {
         } finally {
             setIsLoadingMore(false);
         }
-    };
+    }, [isLoadingMore]);
 
-    const loadMoreMovies = () => fetchMoreData('/discover/movie?', moviePage, movies, setMovies, setMoviePage);
-    const loadMoreTv = () => fetchMoreData('/discover/tv?', tvPage, tv, setTv, setTvPage);
+    const loadMoreMovies = useCallback(() => fetchMoreData('/discover/movie?', moviePage, movies, setMovies, setMoviePage), [fetchMoreData, moviePage, movies]);
+    const loadMoreTv = useCallback(() => fetchMoreData('/discover/tv?', tvPage, tv, setTv, setTvPage), [fetchMoreData, tvPage, tv]);
 
-    const fetchAllData = async () => {
+    const fetchAllData = useCallback(async () => {
         setIsLoading(true);
         try {
             await Promise.all([
@@ -65,11 +66,11 @@ export const ApiContextProvider = ({ children }) => {
         } finally {
             setIsLoading(false);
         }
-    };
+    }, [fetchData]);
 
     useEffect(() => {
         fetchAllData();
-    }, []);
+    }, [fetchAllData]);
 
     const values = {
         popularMovies,
@@ -89,4 +90,8 @@ export const ApiContextProvider = ({ children }) => {
             {children}
         </ApiContext.Provider>
     );
+};
+
+ApiContextProvider.propTypes = {
+    children: PropTypes.node.isRequired,
 };

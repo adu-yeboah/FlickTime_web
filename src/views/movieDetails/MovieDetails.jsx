@@ -1,20 +1,22 @@
 import { useState, useEffect, useContext } from 'react';
 import Navbar from '../../components/Navbar'
 import { FiCalendar, FiClock, FiStar, FiPlay, FiDownload, FiBookmark, FiArrowLeft, FiUser } from "react-icons/fi";
-import { useLocation, useParams, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { ApiContext } from '../../context/apiContext';
 import { useWatchlist } from '../../context/WatchlistContext';
 
 function MovieDetails() {
   const location = useLocation();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { apiDetails } = useContext(ApiContext);
   const { addToWatchlist, removeFromWatchlist, isInWatchlist } = useWatchlist();
 
-  // Get item from location state
+  // Get item from location state or id from search params
   const passedItem = location.state?.item;
+  const movieIdFromUrl = searchParams.get('movieId');
 
-  const [movie, setMovie] = useState(passedItem || {});
+  const [movie, setMovie] = useState(passedItem || { id: movieIdFromUrl });
   const [credits, setCredits] = useState({ cast: [], crew: [] });
   const [recommendations, setRecommendations] = useState([]);
   const [isLoading, setIsLoading] = useState(!passedItem);
@@ -153,7 +155,7 @@ function MovieDetails() {
                   {title}
                 </h1>
                 {movie.tagline && (
-                  <p className="text-xl md:text-2xl text-cyan-400/80 italic font-medium">"{movie.tagline}"</p>
+                  <p className="text-xl md:text-2xl text-cyan-400/80 italic font-medium">{movie.tagline}</p>
                 )}
               </div>
 

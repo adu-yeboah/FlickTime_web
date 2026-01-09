@@ -1,4 +1,5 @@
-import React, { createContext, useState, useEffect, useContext } from 'react';
+import { createContext, useState, useEffect, useContext } from 'react';
+import PropTypes from 'prop-types';
 
 export const WatchlistContext = createContext();
 
@@ -35,6 +36,10 @@ export const WatchlistProvider = ({ children }) => {
             {children}
         </WatchlistContext.Provider>
     );
+};
+
+WatchlistProvider.propTypes = {
+    children: PropTypes.node.isRequired,
 };
 
 export const useWatchlist = () => useContext(WatchlistContext);

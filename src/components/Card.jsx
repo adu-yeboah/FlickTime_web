@@ -3,8 +3,11 @@ import { useWatchlist } from '../context/WatchlistContext'
 import { FiHeart } from 'react-icons/fi'
 import { Star } from 'lucide-react'
 
+import { useNavigate } from 'react-router-dom'
+
 function Card({ item, onClick }) {
     const { addToWatchlist, removeFromWatchlist, isInWatchlist } = useWatchlist();
+    const navigate = useNavigate();
 
     // Simple skeleton if item not loaded yet
     if (!item) {
@@ -25,6 +28,7 @@ function Card({ item, onClick }) {
     const title = item.title || item.name || item.original_title || 'Untitled'
     const voteAverage = item.vote_average?.toFixed(1) || 'N/A'
     const isAdded = isInWatchlist(item.id);
+    const altTitle = title.split(' ').slice(0, 2).join(' ');
 
     const handleWatchlistClick = (e) => {
         e.preventDefault();
@@ -33,6 +37,14 @@ function Card({ item, onClick }) {
             removeFromWatchlist(item.id);
         } else {
             addToWatchlist(item);
+        }
+    };
+
+    const handleClick = () => {
+        if (onClick) {
+            onClick(item);
+        } else {
+            navigate('/movie_details', { state: { item } });
         }
     };
 
@@ -46,15 +58,15 @@ function Card({ item, onClick }) {
 
     return (
         <div
-            className="group w-48 sm:w-52 cursor-pointer transition-all duration-300 hover:scale-[1.02] hover:-translate-y-1"
-            onClick={() => onClick && onClick(item)}
+            className="group w-48 sm:w-52 cursor-pointer transition-all duration-300 hover:scale-[1.02] hover:-translate-y-1 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-400 rounded-xl"
+            onClick={handleClick}
             role="button"
             tabIndex={0}
-            aria-label={`Open ${title}`}
+            aria-label={`${title}, ${voteAverage} rating`}
             onKeyDown={(e) => {
                 if (e.key === 'Enter' || e.key === ' ') {
                     e.preventDefault()
-                    onClick && onClick(item)
+                    handleClick()
                 }
             }}
         >
@@ -63,39 +75,40 @@ function Card({ item, onClick }) {
                 {/* Poster Image */}
                 <img
                     src={`https://image.tmdb.org/t/p/w500${item.poster_path}`}
-                    alt={`${title} poster`}
+                    alt={`${altTitle} poster`}
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                     loading="lazy"
                 />
 
                 {/* Gradient Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <div className="absolute inset-0 bg-black/40 from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
                 {/* Rating Badge */}
                 <div
                     className={`absolute top-3 left-3 px-2.5 py-1.5 ${getRatingColor(item.vote_average)} text-white text-sm font-bold rounded-lg backdrop-blur-sm bg-opacity-90 shadow-lg flex items-center gap-1`}
-                    aria-hidden="true"
+                    aria-label={`Rating: ${voteAverage} out of 10`}
                 >
                     <Star className="w-3 h-3" aria-hidden="true" />
-                    <span>{voteAverage}</span>
+                    <span aria-hidden="true">{voteAverage}</span>
                 </div>
 
                 {/* Watchlist Button */}
                 <button
                     onClick={handleWatchlistClick}
-                    className={`absolute top-3 right-3 p-2 rounded-full backdrop-blur-md transition-all duration-300 transform hover:scale-110 z-10 ${isAdded ? 'bg-red-500 text-white' : 'bg-black/30 text-white hover:bg-white/20'}`}
+                    className={`absolute top-3 right-3 p-2 rounded-full backdrop-blur-md transition-all duration-300 transform hover:scale-110 z-10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-400 ${isAdded ? 'bg-red-500 text-white' : 'bg-black/30 text-white hover:bg-white/20'}`}
+                    aria-label={isAdded ? `Remove ${title} from Watchlist` : `Add ${title} to Watchlist`}
                     title={isAdded ? "Remove from Watchlist" : "Add to Watchlist"}
                 >
-                    <FiHeart className={`w-5 h-5 ${isAdded ? 'fill-current' : ''}`} />
+                    <FiHeart className={`w-5 h-5 ${isAdded ? 'fill-current' : ''}`} aria-hidden="true" />
                 </button>
 
                 {/* Hover Overlay Content */}
                 <div className="absolute inset-0 flex items-end p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
                     <div className="text-white">
-                        <p className="text-xs font-medium text-gray-300 mb-1">
+                        <p className="text-xs font-medium text-gray-300 mb-1" aria-hidden="true">
                             {item.release_date?.split('-')[0] || item.first_air_date?.split('-')[0] || 'N/A'}
                         </p>
-                        <p className="text-sm font-semibold line-clamp-2">
+                        <p className="text-sm font-semibold line-clamp-2" aria-hidden="true">
                             {title}
                         </p>
                     </div>

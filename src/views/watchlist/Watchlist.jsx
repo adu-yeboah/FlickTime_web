@@ -1,4 +1,3 @@
-import React from 'react';
 import Navbar from '../../components/Navbar';
 import Card from '../../components/Card';
 import { useWatchlist } from '../../context/WatchlistContext';
@@ -28,7 +27,7 @@ const Watchlist = () => {
                 {watchlist.length === 0 ? (
                     <div className="flex flex-col items-center justify-center py-20 bg-gray-800/30 rounded-3xl border border-gray-800">
                         <FiHeart className="w-24 h-24 text-gray-700 mb-6" />
-                        <h2 className="text-2xl font-bold text-gray-400 mb-2">It's quiet here...</h2>
+                        <h2 className="text-2xl font-bold text-gray-400 mb-2">It is quiet here...</h2>
                         <p className="text-gray-500 mb-8 max-w-md text-center">
                             Start adding movies and TV shows to your watchlist to keep track of what you want to watch next.
                         </p>
@@ -42,14 +41,10 @@ const Watchlist = () => {
                 ) : (
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
                         {watchlist.map((item) => (
-                            <Link
+                            <Card
                                 key={item.id}
-                                to="/movie_details"
-                                state={{ item }}
-                                className="block transform transition-transform hover:scale-105"
-                            >
-                                <Card item={item} />
-                            </Link>
+                                item={item}
+                            />
                         ))}
                     </div>
                 )}

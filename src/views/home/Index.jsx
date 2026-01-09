@@ -119,13 +119,7 @@ function Index() {
                             >
                                 {section.items && section.items.map((item) => (
                                     <SwiperSlide key={item.id}>
-                                        <Link
-                                            to="/movie_details"
-                                            state={{ item }}
-                                            className="block transform transition-transform hover:scale-105"
-                                        >
-                                            <Card item={item} />
-                                        </Link>
+                                        <Card item={item} />
                                     </SwiperSlide>
                                 ))}
                             </Swiper>

@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unescaped-entities */
 import { useState, useEffect, useRef } from 'react'
 import Navbar from '../../components/Navbar'
 import apiDetails from '../../api/movieApi'

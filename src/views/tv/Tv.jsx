@@ -1,15 +1,16 @@
-import React, { useContext, useEffect, useRef } from 'react'
+import { useContext, useEffect, useRef } from 'react'
 import { ApiContext } from '../../context/apiContext'
 import Navbar from '../../components/Navbar'
 import Card from '../../components/Card'
-import { Link, useNavigate } from 'react-router-dom'
+
 
 function Tv() {
     const { tv, loadMoreTv, isLoadingMore } = useContext(ApiContext)
     const loader = useRef(null)
-    const navigate = useNavigate()
 
     useEffect(() => {
+        const currentLoader = loader.current;
+
         const observer = new IntersectionObserver((entries) => {
             const target = entries[0];
             if (target.isIntersecting) {
@@ -17,13 +18,13 @@ function Tv() {
             }
         }, { threshold: 1.0 });
 
-        if (loader.current) {
-            observer.observe(loader.current);
+        if (currentLoader) {
+            observer.observe(currentLoader);
         }
 
         return () => {
-            if (loader.current) {
-                observer.unobserve(loader.current);
+            if (currentLoader) {
+                observer.unobserve(currentLoader);
             }
         }
     }, [loadMoreTv]);
@@ -44,14 +45,10 @@ function Tv() {
                 <div className="cards flex flex-wrap gap-6 justify-center">
                     {
                         tv.map((item, index) => (
-                            <Link
+                            <Card
                                 key={`${item.id}-${index}`}
-                                to="/movie_details"
-                                state={{ item }}
-                                className="block transform transition-transform hover:scale-105"
-                            >
-                                <Card item={item} />
-                            </Link>
+                                item={item}
+                            />
                         ))
                     }
                 </div>
