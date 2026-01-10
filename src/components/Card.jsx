@@ -2,8 +2,9 @@ import PropTypes from 'prop-types'
 import { useWatchlist } from '../context/WatchlistContext'
 import { FiHeart } from 'react-icons/fi'
 import { Star } from 'lucide-react'
-
 import { useNavigate } from 'react-router-dom'
+import { motion } from 'framer-motion'
+import MovieImage from './MovieImage'
 
 function Card({ item, onClick }) {
     const { addToWatchlist, removeFromWatchlist, isInWatchlist } = useWatchlist();
@@ -14,13 +15,12 @@ function Card({ item, onClick }) {
         return (
             <div className="group w-48 sm:w-52 cursor-pointer">
                 {/* Skeleton Image */}
-                <div className="relative w-full h-72 sm:h-80 rounded-xl overflow-hidden bg-gradient-to-br from-gray-800 to-gray-900 animate-pulse">
-                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-gray-700/20 to-transparent animate-shimmer"></div>
+                <div className="relative w-full h-72 sm:h-80 rounded-xl overflow-hidden bg-gray-800 animate-shimmer">
                 </div>
 
                 {/* Skeleton Title */}
-                <div className="mt-3 h-4 bg-gradient-to-r from-gray-800 to-gray-900 rounded-full animate-pulse"></div>
-                <div className="mt-2 h-3 w-3/4 bg-gradient-to-r from-gray-800 to-gray-900 rounded-full animate-pulse"></div>
+                <div className="mt-3 h-4 bg-gray-800 rounded-full animate-pulse"></div>
+                <div className="mt-2 h-3 w-3/4 bg-gray-800 rounded-full animate-pulse"></div>
             </div>
         )
     }
@@ -57,8 +57,14 @@ function Card({ item, onClick }) {
     }
 
     return (
-        <div
-            className="group w-48 sm:w-52 cursor-pointer transition-all duration-300 hover:scale-[1.02] hover:-translate-y-1 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-400 rounded-xl"
+        <motion.div
+            layout
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            whileHover={{ y: -8, scale: 1.02 }}
+            transition={{ duration: 0.4, ease: "easeOut" }}
+            className="group w-48 sm:w-52 cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-400 rounded-xl"
             onClick={handleClick}
             role="button"
             tabIndex={0}
@@ -71,44 +77,44 @@ function Card({ item, onClick }) {
             }}
         >
             {/* Card Container */}
-            <div className="relative w-full h-72 sm:h-80 rounded-xl overflow-hidden bg-gradient-to-br from-gray-800 to-gray-900 shadow-lg shadow-black/20 group-hover:shadow-xl group-hover:shadow-black/40 transition-all duration-300">
+            <div className="relative w-full h-72 sm:h-80 rounded-xl overflow-hidden bg-gray-900 shadow-lg shadow-black/20 group-hover:shadow-2xl group-hover:shadow-black/60 transition-shadow duration-500">
                 {/* Poster Image */}
-                <img
+                <MovieImage
                     src={`https://image.tmdb.org/t/p/w500${item.poster_path}`}
                     alt={`${altTitle} poster`}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                     loading="lazy"
                 />
 
                 {/* Gradient Overlay */}
-                <div className="absolute inset-0 bg-black/40 from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
                 {/* Rating Badge */}
                 <div
-                    className={`absolute top-3 left-3 px-2.5 py-1.5 ${getRatingColor(item.vote_average)} text-white text-sm font-bold rounded-lg backdrop-blur-sm bg-opacity-90 shadow-lg flex items-center gap-1`}
+                    className={`absolute top-3 left-3 px-2.5 py-1.5 ${getRatingColor(item.vote_average)} text-white text-xs font-bold rounded-lg backdrop-blur-md bg-opacity-90 shadow-lg flex items-center gap-1 z-10`}
                     aria-label={`Rating: ${voteAverage} out of 10`}
                 >
-                    <Star className="w-3 h-3" aria-hidden="true" />
+                    <Star className="w-3 h-3 fill-current" aria-hidden="true" />
                     <span aria-hidden="true">{voteAverage}</span>
                 </div>
 
                 {/* Watchlist Button */}
                 <button
                     onClick={handleWatchlistClick}
-                    className={`absolute top-3 right-3 p-2 rounded-full backdrop-blur-md transition-all duration-300 transform hover:scale-110 z-10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-400 ${isAdded ? 'bg-red-500 text-white' : 'bg-black/30 text-white hover:bg-white/20'}`}
+                    className={`absolute top-3 right-3 p-2 rounded-full backdrop-blur-md transition-all duration-300 transform hover:scale-110 z-20 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-400 ${isAdded ? 'bg-red-500 text-white shadow-lg shadow-red-500/40' : 'bg-black/30 text-white hover:bg-white/20'}`}
                     aria-label={isAdded ? `Remove ${title} from Watchlist` : `Add ${title} to Watchlist`}
                     title={isAdded ? "Remove from Watchlist" : "Add to Watchlist"}
                 >
-                    <FiHeart className={`w-5 h-5 ${isAdded ? 'fill-current' : ''}`} aria-hidden="true" />
+                    <FiHeart className={`w-4 h-4 ${isAdded ? 'fill-current' : ''}`} aria-hidden="true" />
                 </button>
 
                 {/* Hover Overlay Content */}
-                <div className="absolute inset-0 flex items-end p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
-                    <div className="text-white">
-                        <p className="text-xs font-medium text-gray-300 mb-1" aria-hidden="true">
+                <div className="absolute inset-0 flex items-end p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-10">
+                    <div className="text-white transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
+                        <p className="text-[10px] font-bold text-cyan-400 uppercase tracking-wider mb-1" aria-hidden="true">
                             {item.release_date?.split('-')[0] || item.first_air_date?.split('-')[0] || 'N/A'}
                         </p>
-                        <p className="text-sm font-semibold line-clamp-2" aria-hidden="true">
+                        <p className="text-sm font-bold line-clamp-2" aria-hidden="true">
                             {title}
                         </p>
                     </div>
@@ -117,31 +123,31 @@ function Card({ item, onClick }) {
 
             {/* Title Below Card */}
             <div
-                className="mt-3 text-gray-300 font-medium text-sm sm:text-base line-clamp-1 group-hover:text-cyan-400 transition-colors duration-200"
+                className="mt-3 text-gray-300 font-semibold text-sm sm:text-base line-clamp-1 group-hover:text-cyan-400 transition-colors duration-300"
                 title={title}
             >
                 {title}
             </div>
 
             {/* Additional Info on Hover */}
-            <div className="mt-1 text-xs text-gray-500 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                {item.release_date ? (
-                    new Date(item.release_date).toLocaleDateString('en-US', {
-                        month: 'short',
-                        day: 'numeric',
-                        year: 'numeric'
-                    })
-                ) : (
-                    item.first_air_date ? 'TV Series' : 'Unknown Date'
-                )}
+            <div className="mt-1 text-xs text-gray-500 flex items-center gap-2">
+                <span>
+                    {item.release_date ? (
+                        new Date(item.release_date).getFullYear()
+                    ) : (
+                        item.first_air_date ? 'Series' : 'N/A'
+                    )}
+                </span>
+                <span className="w-1 h-1 bg-gray-700 rounded-full"></span>
+                <span>{item.media_type === 'tv' ? 'TV' : 'Movie'}</span>
             </div>
-        </div>
+        </motion.div>
     )
 }
-
-export default Card
 
 Card.propTypes = {
     item: PropTypes.object,
     onClick: PropTypes.func
 }
+
+export default Card

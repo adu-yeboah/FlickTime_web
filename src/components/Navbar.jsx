@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { IoMdSearch } from 'react-icons/io';
 import { FaBars, FaTimes } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
+import logo from '../assets/logo.png';
 
 function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -29,16 +30,14 @@ function Navbar() {
           <div className="flex-shrink-0">
             <Link
               to="/"
-              className="text-2xl md:text-3xl font-bold text-white hover:text-cyan-400 transition-colors duration-300 group"
+              className="flex items-center group"
+              aria-label="FlickTime Home"
             >
-              <span className="text-cyan-400 text-3xl md:text-4xl font-extrabold transition-transform duration-300 group-hover:scale-110 inline-block">
-                f
-              </span>
-              <span>lick</span>
-              <span className="text-cyan-400 text-3xl md:text-4xl font-extrabold transition-transform duration-300 group-hover:scale-110 inline-block">
-                t
-              </span>
-              <span>ime</span>
+              <img
+                src={logo}
+                alt="FlickTime Logo"
+                className="h-10 md:h-12 w-auto transition-transform duration-300 group-hover:scale-105"
+              />
             </Link>
           </div>
 
@@ -92,8 +91,8 @@ function Navbar() {
         <div
           id="mobile-menu"
           className={`md:hidden overflow-hidden transition-all duration-300 ease-in-out ${isMobileMenuOpen
-              ? 'max-h-64 opacity-100'
-              : 'max-h-0 opacity-0 pointer-events-none'
+            ? 'max-h-64 opacity-100'
+            : 'max-h-0 opacity-0 pointer-events-none'
             }`}
           role="navigation"
           aria-label="Mobile navigation"

@@ -4,6 +4,8 @@ import { FiCalendar, FiClock, FiStar, FiPlay, FiDownload, FiBookmark, FiArrowLef
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { ApiContext } from '../../context/apiContext';
 import { useWatchlist } from '../../context/WatchlistContext';
+import { motion } from 'framer-motion';
+import MovieImage from '../../components/MovieImage';
 
 function MovieDetails() {
   const location = useLocation();
@@ -86,33 +88,41 @@ function MovieDetails() {
 
       {/* Backdrop Image with Overlay */}
       <div className="relative h-[50vh] md:h-[70vh] overflow-hidden">
-        {movie.backdrop_path ? (
-          <img
-            src={`https://image.tmdb.org/t/p/original${movie.backdrop_path}`}
-            alt={title}
-            className="w-full h-full object-cover opacity-40"
-          />
-        ) : (
-          <div className="w-full h-full bg-gradient-to-r from-cyan-900/20 to-purple-900/20" />
-        )}
+        <MovieImage
+          src={`https://image.tmdb.org/t/p/original${movie.backdrop_path}`}
+          alt={title}
+          className="w-full h-full object-cover opacity-40"
+        />
         <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/60 to-transparent" />
 
         {/* Back Button */}
-        <button
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
           onClick={() => navigate(-1)}
           className="absolute top-24 left-6 md:left-12 p-3 bg-black/40 hover:bg-black/60 text-white rounded-full backdrop-blur-md transition-all duration-300 z-20 group"
         >
           <FiArrowLeft className="w-6 h-6 group-hover:-translate-x-1 transition-transform" />
-        </button>
+        </motion.button>
       </div>
 
-      <div className="container mx-auto px-4 md:px-6 lg:px-8 -mt-32 md:-mt-48 relative z-10 pb-20">
+      <motion.div
+        initial={{ opacity: 0, y: 50 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
+        className="container mx-auto px-4 md:px-6 lg:px-8 -mt-32 md:-mt-48 relative z-10 pb-20"
+      >
         <div className="flex flex-col lg:flex-row gap-8 lg:gap-12">
           {/* Poster Image */}
-          <div className="w-full lg:w-1/3">
+          <motion.div
+            initial={{ opacity: 0, x: -30 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="w-full lg:w-1/3"
+          >
             <div className="relative group max-w-sm mx-auto lg:mx-0">
               <div className="rounded-2xl overflow-hidden shadow-2xl shadow-black/70 border border-gray-800">
-                <img
+                <MovieImage
                   src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
                   alt={title}
                   className="w-full h-auto object-cover"
@@ -128,26 +138,41 @@ function MovieDetails() {
 
             {/* Action Buttons */}
             <div className="mt-8 grid grid-cols-2 gap-4 max-w-sm mx-auto lg:mx-0">
-              <button className="flex items-center justify-center gap-2 py-4 bg-cyan-400 hover:bg-cyan-500 text-gray-900 font-bold rounded-xl transition-all duration-300 hover:scale-[1.02] hover:shadow-lg hover:shadow-cyan-400/30">
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className="flex items-center justify-center gap-2 py-4 bg-cyan-400 hover:bg-cyan-500 text-gray-900 font-bold rounded-xl transition-colors duration-300 shadow-lg shadow-cyan-400/30"
+              >
                 <FiPlay className="w-6 h-6 fill-current" />
                 Watch Now
-              </button>
-              <button className="flex items-center justify-center gap-2 py-4 bg-gray-800 hover:bg-gray-700 text-white font-bold rounded-xl transition-all duration-300 hover:scale-[1.02] border border-gray-700">
+              </motion.button>
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className="flex items-center justify-center gap-2 py-4 bg-gray-800 hover:bg-gray-700 text-white font-bold rounded-xl transition-colors duration-300 border border-gray-700"
+              >
                 <FiDownload className="w-6 h-6" />
                 Download
-              </button>
-              <button
+              </motion.button>
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
                 onClick={handleWatchlistToggle}
-                className={`col-span-2 flex items-center justify-center gap-2 py-4 font-bold rounded-xl transition-all duration-300 hover:scale-[1.02] border ${isAdded ? 'bg-red-500/20 border-red-500 text-red-500 hover:bg-red-500/30' : 'bg-gray-800/50 hover:bg-gray-700/50 text-white border-gray-700'}`}
+                className={`col-span-2 flex items-center justify-center gap-2 py-4 font-bold rounded-xl transition-colors duration-300 border ${isAdded ? 'bg-red-500/20 border-red-500 text-red-500 hover:bg-red-500/30' : 'bg-gray-800/50 hover:bg-gray-700/50 text-white border-gray-700'}`}
               >
                 <FiBookmark className={`w-6 h-6 ${isAdded ? 'fill-current' : ''}`} />
                 {isAdded ? 'In Watchlist' : 'Add to Watchlist'}
-              </button>
+              </motion.button>
             </div>
-          </div>
+          </motion.div>
 
           {/* Movie Details */}
-          <div className="w-full lg:w-2/3 text-white">
+          <motion.div
+            initial={{ opacity: 0, x: 30 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+            className="w-full lg:w-2/3 text-white"
+          >
             <div className="space-y-8">
               {/* Title and Tagline */}
               <div>
@@ -246,9 +271,14 @@ function MovieDetails() {
                 <div className="pt-12 border-t border-gray-800">
                   <h3 className="text-2xl font-bold text-white mb-6">Recommendations</h3>
                   <div className="flex gap-6 overflow-x-auto pb-6 scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-transparent">
-                    {recommendations.slice(0, 10).map((rec) => (
-                      <div
+                    {recommendations.slice(0, 10).map((rec, index) => (
+                      <motion.div
                         key={rec.id}
+                        initial={{ opacity: 0, x: 20 }}
+                        whileInView={{ opacity: 1, x: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.4, delay: index * 0.05 }}
+                        whileHover={{ y: -8 }}
                         onClick={() => {
                           setMovie(rec);
                           window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -256,7 +286,7 @@ function MovieDetails() {
                         className="flex-shrink-0 w-40 group cursor-pointer"
                       >
                         <div className="relative aspect-[2/3] rounded-xl overflow-hidden mb-3 border border-gray-800 group-hover:border-cyan-400/50 transition-all duration-300">
-                          <img
+                          <MovieImage
                             src={`https://image.tmdb.org/t/p/w200${rec.poster_path}`}
                             alt={rec.title || rec.name}
                             className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
@@ -268,15 +298,15 @@ function MovieDetails() {
                         <p className="text-xs text-gray-500 mt-1">
                           {(rec.release_date || rec.first_air_date)?.split('-')[0]}
                         </p>
-                      </div>
+                      </motion.div>
                     ))}
                   </div>
                 </div>
               )}
             </div>
-          </div>
+          </motion.div>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 }

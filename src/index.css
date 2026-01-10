@@ -35,13 +35,11 @@
   * {
     margin: 0;
     padding: 0;
-    transition: all .5s;
+    box-sizing: border-box;
   }
 
   body {
     font-family: 'Fira Sans', sans-serif;
-    text-transform: capitalize;
-    transition: all .5s;
     background-color: var(--bg-color);
     color: var(--text-color);
     min-height: 100vh;
@@ -50,7 +48,6 @@
 
   html {
     overflow-x: hidden;
-    transition: all .5s;
     font-family: 'Fira Sans', sans-serif;
     scroll-behavior: smooth;
   }
@@ -85,7 +82,10 @@
     color: var(--primary-color-2);
   }
 
-  input, button, textarea, select {
+  input,
+  button,
+  textarea,
+  select {
     border: none;
     outline: none;
     font: inherit;
@@ -99,7 +99,8 @@
     display: block;
   }
 
-  ul, ol {
+  ul,
+  ol {
     list-style: none;
   }
 
@@ -231,9 +232,12 @@
   }
 
   @keyframes float {
-    0%, 100% {
+
+    0%,
+    100% {
       transform: translateY(0);
     }
+
     50% {
       transform: translateY(-10px);
     }
@@ -244,11 +248,33 @@
   }
 
   @keyframes pulse {
-    0%, 100% {
+
+    0%,
+    100% {
       opacity: 1;
     }
+
     50% {
       opacity: 0.5;
+    }
+  }
+
+  .animate-shimmer {
+    background: linear-gradient(90deg,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(255, 255, 255, 0.05) 50%,
+        rgba(255, 255, 255, 0) 100%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+  }
+
+  @keyframes shimmer {
+    0% {
+      background-position: -200% 0;
+    }
+
+    100% {
+      background-position: 200% 0;
     }
   }
 
@@ -281,12 +307,12 @@
     .no-print {
       display: none !important;
     }
-    
+
     body {
       background: white;
       color: black;
     }
-    
+
     a {
       color: black;
       text-decoration: underline;
@@ -296,6 +322,7 @@
 
 /* Reduced Motion */
 @media (prefers-reduced-motion: reduce) {
+
   *,
   *::before,
   *::after {
