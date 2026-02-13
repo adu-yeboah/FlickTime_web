@@ -1,80 +1,51 @@
-/* eslint-disable react/no-unescaped-entities */
 import { useState, useEffect, useRef } from 'react'
 import Navbar from '../../components/Navbar'
-import apiDetails from '../../api/movieApi'
 import Card from '../../components/Card'
 import { IoSearch, IoClose, IoFilter, IoFilm, IoTv } from 'react-icons/io5'
 import { FiSearch } from 'react-icons/fi'
 import { useNavigate } from 'react-router-dom'
+import { useInfiniteSearch } from '../../api/queries'
 
 function Search() {
   const [input, setInput] = useState("")
-  const [data, setData] = useState([])
-  const [isLoading, setIsLoading] = useState(false)
+  const [debouncedInput, setDebouncedInput] = useState("")
   const [searchType, setSearchType] = useState('movie') // 'movie' or 'tv'
-  const [showResults, setShowResults] = useState(false)
-  const searchTimeout = useRef(null)
   const navigate = useNavigate()
+  const loader = useRef(null)
 
-  const fetchData = (value) => {
-    if (!value.trim()) {
-      setData([])
-      setShowResults(false)
-      return
-    }
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedInput(input), 500)
+    return () => clearTimeout(timer)
+  }, [input])
 
-    setIsLoading(true)
-    const endpoint = searchType === 'movie'
-      ? 'search/movie'
-      : 'search/tv'
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } = useInfiniteSearch(debouncedInput, searchType)
+  const results = data?.pages.flatMap(page => page.results) || []
+  const showResults = !!debouncedInput
 
-    fetch(`https://api.themoviedb.org/3/${endpoint}?query=${value}&api_key=${apiDetails.api_key}`)
-      .then(res => res.json())
-      .then(data => {
-        setData(data.results || [])
-        setShowResults(true)
-        setIsLoading(false)
-      })
-      .catch(error => {
-        console.error('Search error:', error)
-        setIsLoading(false)
-      })
-  }
+  useEffect(() => {
+    const currentLoader = loader.current;
+    const observer = new IntersectionObserver((entries) => {
+      const target = entries[0];
+      if (target.isIntersecting && hasNextPage && !isFetchingNextPage) {
+        fetchNextPage();
+      }
+    }, { threshold: 1.0 });
+
+    if (currentLoader) observer.observe(currentLoader);
+    return () => { if (currentLoader) observer.unobserve(currentLoader); }
+  }, [fetchNextPage, hasNextPage, isFetchingNextPage])
 
   const handleChange = (value) => {
     setInput(value)
-
-    // Clear previous timeout
-    if (searchTimeout.current) {
-      clearTimeout(searchTimeout.current)
-    }
-
-    // Set new timeout for debouncing
-    searchTimeout.current = setTimeout(() => {
-      fetchData(value)
-    }, 500)
   }
 
   const clearSearch = () => {
     setInput("")
-    setData([])
-    setShowResults(false)
-    if (searchTimeout.current) {
-      clearTimeout(searchTimeout.current)
-    }
   }
 
   const toggleSearchType = () => {
     setSearchType(prev => prev === 'movie' ? 'tv' : 'movie')
   }
-
-  useEffect(() => {
-    return () => {
-      if (searchTimeout.current) {
-        clearTimeout(searchTimeout.current)
-      }
-    }
-  }, [])
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black">
@@ -156,7 +127,7 @@ function Search() {
                     )}
                   </h2>
                   <p className="text-gray-400 mt-1">
-                    {isLoading ? 'Searching...' : `${data.length} results found`}
+                    {isLoading ? 'Searching...' : `${results.length} results found`}
                   </p>
                 </div>
 
@@ -188,16 +159,25 @@ function Search() {
           </div>
         ) : showResults ? (
           // Search Results Grid
-          data.length > 0 ? (
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 md:gap-6">
-              {data.map((item) => (
-                <Card
-                  key={item.id}
-                  item={item}
-                  onClick={(item) => navigate('/movie_details', { state: { item } })}
-                />
-              ))}
-            </div>
+          results.length > 0 ? (
+            <>
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 md:gap-6">
+                {results.map((item, idx) => (
+                  <Card
+                    key={`${item.id}-${idx}`}
+                    item={item}
+                    onClick={(item) => navigate('/movie_details', { state: { item } })}
+                  />
+                ))}
+              </div>
+              
+              {/* Infinite Scroll Loader */}
+              <div ref={loader} className="h-20 flex items-center justify-center my-8">
+                {isFetchingNextPage && (
+                  <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-cyan-400"></div>
+                )}
+              </div>
+            </>
           ) : (
             // No Results
             <div className="text-center py-16">

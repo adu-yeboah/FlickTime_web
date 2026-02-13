@@ -1,5 +1,5 @@
-import { useState, useContext } from 'react';
-import { ApiContext } from '../context/apiContext';
+import { useState } from 'react';
+import { usePopularMovies, useInfiniteMovies } from '../api/queries';
 import { FiSmile, FiFrown, FiMeh, FiHeart, FiZap, FiCoffee, FiX } from 'react-icons/fi';
 import Card from './Card';
 import { Swiper, SwiperSlide } from 'swiper/react';
@@ -7,7 +7,9 @@ import { Autoplay } from 'swiper/modules';
 import 'swiper/css';
 
 const MoodMatcher = () => {
-    const { movies, popularMovies } = useContext(ApiContext);
+    const { data: popularMovies = [] } = usePopularMovies();
+    const { data: moviesData } = useInfiniteMovies();
+    const movies = moviesData?.pages[0]?.results || [];
     const [isOpen, setIsOpen] = useState(false);
     const [step, setStep] = useState(0);
     const [mood, setMood] = useState(null);

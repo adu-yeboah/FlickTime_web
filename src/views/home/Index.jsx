@@ -1,9 +1,8 @@
-import { useContext } from 'react'
+import { usePopularMovies, useUpcomingMovies, useTrendingTv, useInfiniteMovies } from '../../api/queries'
 import Navbar from '../../components/Navbar'
 import Banner from '../../components/Banner'
 import Card from '../../components/Card'
 import MoodMatcher from '../../components/MoodMatcher'
-import { ApiContext } from '../../context/apiContext'
 import { Link } from 'react-router-dom'
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay, Navigation } from 'swiper/modules';
@@ -13,7 +12,15 @@ import 'swiper/css/autoplay';
 import { FiTrendingUp, FiFilm, FiTv, FiCalendar, FiAlertCircle } from 'react-icons/fi';
 
 function Index() {
-    const { upcomingMovies, movies, popularMovies, tv, isLoading, error } = useContext(ApiContext);
+    const { data: popularMovies = [], isLoading: isLoadingPopular, error: errorPopular } = usePopularMovies();
+    const { data: upcomingMovies = [], isLoading: isLoadingUpcoming, error: errorUpcoming } = useUpcomingMovies();
+    const { data: tv = [], isLoading: isLoadingTv, error: errorTv } = useTrendingTv();
+    const { data: moviesData, isLoading: isLoadingMovies, error: errorMovies } = useInfiniteMovies();
+
+    const movies = moviesData?.pages[0]?.results || [];
+
+    const isLoading = isLoadingPopular || isLoadingUpcoming || isLoadingTv || isLoadingMovies;
+    const error = errorPopular || errorUpcoming || errorTv || errorMovies;
 
     const sections = [
         {

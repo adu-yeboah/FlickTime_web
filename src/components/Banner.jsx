@@ -1,12 +1,12 @@
-import { useContext, useState } from 'react';
+import { useState } from 'react';
 import { FiCalendar } from 'react-icons/fi';
-import { ApiContext } from '../context/apiContext';
+import { usePopularMovies } from '../api/queries';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import MovieImage from './MovieImage';
 
 function Banner() {
-  const { popularMovies } = useContext(ApiContext);
+  const { data: popularMovies = [] } = usePopularMovies();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);

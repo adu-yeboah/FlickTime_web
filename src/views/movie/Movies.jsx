@@ -1,13 +1,12 @@
-import { useContext, useEffect, useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import './Movies.scss'
 import Navbar from '../../components/Navbar'
 import Card from '../../components/Card'
-import { ApiContext } from '../../context/apiContext'
-
-
+import { useInfiniteMovies } from '../../api/queries'
 
 function Movies() {
-  const { movies, loadMoreMovies, isLoadingMore } = useContext(ApiContext)
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteMovies()
+  const movies = data?.pages.flatMap(page => page.results) || [];
   const loader = useRef(null)
 
   useEffect(() => {
@@ -15,8 +14,8 @@ function Movies() {
 
     const observer = new IntersectionObserver((entries) => {
       const target = entries[0];
-      if (target.isIntersecting) {
-        loadMoreMovies();
+      if (target.isIntersecting && hasNextPage && !isFetchingNextPage) {
+        fetchNextPage();
       }
     }, { threshold: 1.0 });
 
@@ -57,7 +56,7 @@ function Movies() {
 
         {/* Infinite Scroll Loader */}
         <div ref={loader} className="h-20 flex items-center justify-center my-8">
-          {isLoadingMore && (
+          {isFetchingNextPage && (
             <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-cyan-400"></div>
           )}
         </div>

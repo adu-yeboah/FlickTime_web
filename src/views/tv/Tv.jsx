@@ -1,11 +1,11 @@
-import { useContext, useEffect, useRef } from 'react'
-import { ApiContext } from '../../context/apiContext'
+import { useEffect, useRef } from 'react'
+import { useInfiniteTv } from '../../api/queries'
 import Navbar from '../../components/Navbar'
 import Card from '../../components/Card'
 
-
 function Tv() {
-    const { tv, loadMoreTv, isLoadingMore } = useContext(ApiContext)
+    const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteTv()
+    const tv = data?.pages.flatMap(page => page.results) || [];
     const loader = useRef(null)
 
     useEffect(() => {
@@ -13,8 +13,8 @@ function Tv() {
 
         const observer = new IntersectionObserver((entries) => {
             const target = entries[0];
-            if (target.isIntersecting) {
-                loadMoreTv();
+            if (target.isIntersecting && hasNextPage && !isFetchingNextPage) {
+                fetchNextPage();
             }
         }, { threshold: 1.0 });
 
@@ -55,7 +55,7 @@ function Tv() {
 
                 {/* Infinite Scroll Loader */}
                 <div ref={loader} className="h-20 flex items-center justify-center my-8">
-                    {isLoadingMore && (
+                    {isFetchingNextPage && (
                         <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-cyan-400"></div>
                     )}
                 </div>

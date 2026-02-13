@@ -3,18 +3,27 @@ import ReactDOM from 'react-dom/client'
 import './index.css'
 import { RouterProvider } from 'react-router-dom'
 import router from './router'
-import { ApiContextProvider } from './context/apiContext'
 import ThemeProvider from './context/ThemeContext'
 import { WatchlistProvider } from './context/WatchlistContext'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+      staleTime: 1000 * 60 * 5, // 5 minutes
+    },
+  },
+})
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <ThemeProvider>
-      <ApiContextProvider>
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider>
         <WatchlistProvider>
           <RouterProvider router={router} />
         </WatchlistProvider>
-      </ApiContextProvider>
-    </ThemeProvider>
+      </ThemeProvider>
+    </QueryClientProvider>
   </React.StrictMode>,
 )

@@ -1,8 +1,8 @@
-import { useState, useEffect, useContext } from 'react';
+import { useState, useEffect } from 'react';
 import Navbar from '../../components/Navbar'
 import { FiCalendar, FiClock, FiStar, FiPlay, FiDownload, FiBookmark, FiArrowLeft, FiUser } from "react-icons/fi";
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
-import { ApiContext } from '../../context/apiContext';
+import apiDetails from '../../api/movieApi';
 import { useWatchlist } from '../../context/WatchlistContext';
 import { motion } from 'framer-motion';
 import MovieImage from '../../components/MovieImage';
@@ -11,7 +11,6 @@ function MovieDetails() {
   const location = useLocation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { apiDetails } = useContext(ApiContext);
   const { addToWatchlist, removeFromWatchlist, isInWatchlist } = useWatchlist();
 
   // Get item from location state or id from search params
