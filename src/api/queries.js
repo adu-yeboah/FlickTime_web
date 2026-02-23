@@ -78,7 +78,17 @@ export const useInfiniteSearch = (query, searchType) => {
                 return lastPage.page + 1;
             }
             return undefined;
+    });
+};
+
+export const useMovieDetails = (id, type) => {
+    return useQuery({
+        queryKey: ['details', type, id],
+        queryFn: async () => {
+            if (!id || !type) return null;
+            const data = await fetchFromTMDB(`/${type}/${id}?append_to_response=credits,recommendations,videos,watch/providers`);
+            return data;
         },
-        enabled: !!query,
+        enabled: !!id && !!type,
     });
 };
