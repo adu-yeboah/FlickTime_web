@@ -1,4 +1,5 @@
-import { usePopularMovies, useUpcomingMovies, useTrendingTv, useInfiniteMovies } from '../../api/queries'
+import { usePopularMovies, useUpcomingMovies, useTrendingTv, useInfiniteMovies, useRecommendations } from '../../api/queries'
+import { useWatchlist } from '../../context/WatchlistContext'
 import Navbar from '../../components/Navbar'
 import Banner from '../../components/Banner'
 import Card from '../../components/Card'
@@ -9,20 +10,35 @@ import { Autoplay, Navigation } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/autoplay';
-import { FiTrendingUp, FiFilm, FiTv, FiCalendar, FiAlertCircle } from 'react-icons/fi';
+import { FiTrendingUp, FiFilm, FiTv, FiCalendar, FiAlertCircle, FiHeart } from 'react-icons/fi';
 
 function Index() {
+    const { watchlist } = useWatchlist();
+    const latestWatchlistItem = watchlist.length > 0 ? watchlist[watchlist.length - 1] : null;
+    const latestItemType = latestWatchlistItem ? (latestWatchlistItem.title || latestWatchlistItem.original_title ? 'movie' : 'tv') : null;
+
     const { data: popularMovies = [], isLoading: isLoadingPopular, error: errorPopular } = usePopularMovies();
     const { data: upcomingMovies = [], isLoading: isLoadingUpcoming, error: errorUpcoming } = useUpcomingMovies();
     const { data: tv = [], isLoading: isLoadingTv, error: errorTv } = useTrendingTv();
     const { data: moviesData, isLoading: isLoadingMovies, error: errorMovies } = useInfiniteMovies();
+    const { data: smartRecommendations = [], isLoading: isLoadingRecs } = useRecommendations(
+        latestWatchlistItem?.id, 
+        latestItemType
+    );
 
     const movies = moviesData?.pages[0]?.results || [];
 
-    const isLoading = isLoadingPopular || isLoadingUpcoming || isLoadingTv || isLoadingMovies;
+    const isLoading = isLoadingPopular || isLoadingUpcoming || isLoadingTv || isLoadingMovies || isLoadingRecs;
     const error = errorPopular || errorUpcoming || errorTv || errorMovies;
 
     const sections = [
+        ...(latestWatchlistItem && smartRecommendations.length > 0 ? [{
+            id: 'smart-recs',
+            title: `Because you added "${latestWatchlistItem.title || latestWatchlistItem.name}"`,
+            icon: FiHeart,
+            items: smartRecommendations,
+            color: 'from-purple-500 to-pink-500',
+        }] : []),
         {
             id: 'trending',
             title: 'Trending Now',
@@ -42,7 +58,7 @@ function Index() {
             title: 'TV Shows',
             icon: FiTv,
             items: tv,
-            color: 'from-purple-500 to-indigo-500',
+            color: 'from-indigo-500 to-purple-500',
         },
         {
             id: 'upcoming',
@@ -104,13 +120,15 @@ function Index() {
                                 </h2>
                             </div>
 
-                            <Link
-                                to={section.id === 'tv-shows' ? '/tv' : section.id === 'movies' ? '/movies' : '/movies'}
-                                className="group flex items-center gap-2 text-cyan-400 font-medium hover:text-cyan-300 transition-colors"
-                            >
-                                View All
-                                <span className="transform group-hover:translate-x-1 transition-transform">→</span>
-                            </Link>
+                            {section.id !== 'smart-recs' && (
+                                <Link
+                                    to={section.id === 'tv-shows' ? '/tv' : '/movies'}
+                                    className="group flex items-center gap-2 text-cyan-400 font-medium hover:text-cyan-300 transition-colors"
+                                >
+                                    View All
+                                    <span className="transform group-hover:translate-x-1 transition-transform">→</span>
+                                </Link>
+                            )}
                         </div>
 
                         {/* Swiper Carousel */}

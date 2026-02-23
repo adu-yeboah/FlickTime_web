@@ -31,12 +31,16 @@ export const useTrendingTv = () => {
     });
 };
 
-// For Infinite Scrolling
-export const useInfiniteMovies = () => {
+export const useInfiniteMovies = (filters = {}) => {
     return useInfiniteQuery({
-        queryKey: ['movies', 'discover'],
+        queryKey: ['movies', 'discover', filters],
         queryFn: async ({ pageParam = 1 }) => {
-            const data = await fetchFromTMDB(`/discover/movie?page=${pageParam}`);
+            let url = `/discover/movie?page=${pageParam}`;
+            if (filters.genre) url += `&with_genres=${filters.genre}`;
+            if (filters.year) url += `&primary_release_year=${filters.year}`;
+            if (filters.rating) url += `&vote_average.gte=${filters.rating}`;
+            if (filters.sortBy) url += `&sort_by=${filters.sortBy}`;
+            const data = await fetchFromTMDB(url);
             return data;
         },
         getNextPageParam: (lastPage) => {
@@ -48,11 +52,16 @@ export const useInfiniteMovies = () => {
     });
 };
 
-export const useInfiniteTv = () => {
+export const useInfiniteTv = (filters = {}) => {
     return useInfiniteQuery({
-        queryKey: ['tv', 'discover'],
+        queryKey: ['tv', 'discover', filters],
         queryFn: async ({ pageParam = 1 }) => {
-            const data = await fetchFromTMDB(`/discover/tv?page=${pageParam}`);
+            let url = `/discover/tv?page=${pageParam}`;
+            if (filters.genre) url += `&with_genres=${filters.genre}`;
+            if (filters.year) url += `&first_air_date_year=${filters.year}`;
+            if (filters.rating) url += `&vote_average.gte=${filters.rating}`;
+            if (filters.sortBy) url += `&sort_by=${filters.sortBy}`;
+            const data = await fetchFromTMDB(url);
             return data;
         },
         getNextPageParam: (lastPage) => {
@@ -88,6 +97,16 @@ export const useMovieDetails = (id, type) => {
             if (!id || !type) return null;
             const data = await fetchFromTMDB(`/${type}/${id}?append_to_response=credits,recommendations,videos,watch/providers`);
             return data;
+    });
+};
+
+export const useRecommendations = (id, type) => {
+    return useQuery({
+        queryKey: ['recommendations', type, id],
+        queryFn: async () => {
+            if (!id || !type) return [];
+            const data = await fetchFromTMDB(`/${type}/${id}/recommendations`);
+            return data.results || [];
         },
         enabled: !!id && !!type,
     });
