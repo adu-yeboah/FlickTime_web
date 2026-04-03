@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types'
 import { useWatchlist } from '../context/WatchlistContext'
+import { useHistory } from '../context/HistoryContext'
 import { FiHeart } from 'react-icons/fi'
 import { Star } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
@@ -8,6 +9,7 @@ import MovieImage from './MovieImage'
 
 function Card({ item, onClick }) {
     const { addToWatchlist, removeFromWatchlist, isInWatchlist } = useWatchlist();
+    const { addToHistory } = useHistory();
     const navigate = useNavigate();
 
     // Simple skeleton if item not loaded yet
@@ -41,6 +43,7 @@ function Card({ item, onClick }) {
     };
 
     const handleClick = () => {
+        addToHistory(item);
         if (onClick) {
             onClick(item);
         } else {

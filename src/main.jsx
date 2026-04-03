@@ -5,6 +5,7 @@ import { RouterProvider } from 'react-router-dom'
 import router from './router'
 import ThemeProvider from './context/ThemeContext'
 import { WatchlistProvider } from './context/WatchlistContext'
+import { HistoryProvider } from './context/HistoryContext'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
 const queryClient = new QueryClient({
@@ -21,7 +22,9 @@ ReactDOM.createRoot(document.getElementById('root')).render(
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
         <WatchlistProvider>
-          <RouterProvider router={router} />
+          <HistoryProvider>
+            <RouterProvider router={router} />
+          </HistoryProvider>
         </WatchlistProvider>
       </ThemeProvider>
     </QueryClientProvider>

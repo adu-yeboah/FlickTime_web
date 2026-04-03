@@ -1,5 +1,6 @@
 import { usePopularMovies, useUpcomingMovies, useTrendingTv, useInfiniteMovies, useRecommendations } from '../../api/queries'
 import { useWatchlist } from '../../context/WatchlistContext'
+import { useHistory } from '../../context/HistoryContext'
 import Navbar from '../../components/Navbar'
 import Banner from '../../components/Banner'
 import Card from '../../components/Card'
@@ -10,10 +11,11 @@ import { Autoplay, Navigation } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/autoplay';
-import { FiTrendingUp, FiFilm, FiTv, FiCalendar, FiAlertCircle, FiHeart } from 'react-icons/fi';
+import { FiTrendingUp, FiFilm, FiTv, FiCalendar, FiAlertCircle, FiHeart, FiClock } from 'react-icons/fi';
 
 function Index() {
     const { watchlist } = useWatchlist();
+    const { history } = useHistory();
     const latestWatchlistItem = watchlist.length > 0 ? watchlist[watchlist.length - 1] : null;
     const latestItemType = latestWatchlistItem ? (latestWatchlistItem.title || latestWatchlistItem.original_title ? 'movie' : 'tv') : null;
 
@@ -38,6 +40,13 @@ function Index() {
             icon: FiHeart,
             items: smartRecommendations,
             color: 'from-purple-500 to-pink-500',
+        }] : []),
+        ...(history.length > 0 ? [{
+            id: 'recently-viewed',
+            title: 'Recently Viewed',
+            icon: FiClock,
+            items: history,
+            color: 'from-green-500 to-emerald-500',
         }] : []),
         {
             id: 'trending',
@@ -120,7 +129,7 @@ function Index() {
                                 </h2>
                             </div>
 
-                            {section.id !== 'smart-recs' && (
+                            {section.id !== 'smart-recs' && section.id !== 'recently-viewed' && (
                                 <Link
                                     to={section.id === 'tv-shows' ? '/tv' : '/movies'}
                                     className="group flex items-center gap-2 text-cyan-400 font-medium hover:text-cyan-300 transition-colors"
