@@ -100,7 +100,7 @@ function Tv() {
                 activePreset={activePreset} applyPreset={applyPreset}
             />
 
-            <div className="container mx-auto px-4 pb-12 flex flex-col sm:flex-row gap-8">
+            <div className="container mx-auto px-4 pb-12 flex gap-8">
                 <TvSidebar 
                     isSidebarOpen={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen}
                     filters={filters} handleFilterChange={handleFilterChange}
