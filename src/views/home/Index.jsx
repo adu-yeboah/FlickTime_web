@@ -6,6 +6,7 @@ import Banner from '../../components/Banner'
 import MoodMatcher from '../../components/MoodMatcher'
 import SectionCarousel from './components/SectionCarousel';
 import CallToAction from './components/CallToAction';
+import HomeSkeleton from './components/HomeSkeleton';
 import { FiTrendingUp, FiFilm, FiTv, FiCalendar, FiAlertCircle, FiHeart, FiClock } from 'react-icons/fi';
 
 function Index() {
@@ -75,11 +76,7 @@ function Index() {
 
 
     if (isLoading) {
-        return (
-            <div className="min-h-screen bg-gray-900 flex items-center justify-center">
-                <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-cyan-400"></div>
-            </div>
-        )
+        return <HomeSkeleton />;
     }
 
     if (error) {

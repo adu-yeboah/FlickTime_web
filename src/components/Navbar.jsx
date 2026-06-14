@@ -30,7 +30,7 @@ function Navbar() {
           <div className="flex-shrink-0">
             <Link
               to="/"
-              className="flex items-center group"
+              className="flex items-center gap-3 group"
               aria-label="FlickTime Home"
             >
               <img
