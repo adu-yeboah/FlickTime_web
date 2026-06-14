@@ -1,240 +1,165 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import Navbar from '../../components/Navbar'
 import Card from '../../components/Card'
-import { IoSearch, IoClose, IoFilter, IoFilm, IoTv } from 'react-icons/io5'
-import { FiSearch } from 'react-icons/fi'
+import { IoSearch, IoClose, IoTv, IoFilm, IoTimeOutline } from 'react-icons/io5'
+import { FiSearch, FiTrash2, FiTrendingUp } from 'react-icons/fi'
 import { useNavigate } from 'react-router-dom'
 import { useInfiniteSearch } from '../../api/queries'
+import { motion, AnimatePresence } from 'framer-motion'
+
+import SearchHeader from './components/SearchHeader';
+import SearchSuggestions from './components/SearchSuggestions';
+
+const MAX_RECENT = 8;
 
 function Search() {
-  const [input, setInput] = useState("")
-  const [debouncedInput, setDebouncedInput] = useState("")
-  const [searchType, setSearchType] = useState('movie') // 'movie' or 'tv'
-  const navigate = useNavigate()
-  const loader = useRef(null)
+    const [input, setInput] = useState("")
+    const [debouncedInput, setDebouncedInput] = useState("")
+    const [searchType, setSearchType] = useState('movie')
+    const [recentSearches, setRecentSearches] = useState(() => {
+        try {
+            return JSON.parse(localStorage.getItem('recentSearches') || '[]');
+        } catch { return []; }
+    });
+    const navigate = useNavigate()
+    const loader = useRef(null)
+    const inputRef = useRef(null)
 
-  useEffect(() => {
-    const timer = setTimeout(() => setDebouncedInput(input), 500)
-    return () => clearTimeout(timer)
-  }, [input])
+    // Debounce
+    useEffect(() => {
+        const timer = setTimeout(() => setDebouncedInput(input), 500)
+        return () => clearTimeout(timer)
+    }, [input])
 
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } = useInfiniteSearch(debouncedInput, searchType)
-  const results = data?.pages.flatMap(page => page.results) || []
-  const showResults = !!debouncedInput
+    // Save to recent searches
+    const saveRecentSearch = useCallback((term) => {
+        if (!term.trim()) return;
+        setRecentSearches(prev => {
+            const filtered = prev.filter(s => s !== term);
+            const updated = [term, ...filtered].slice(0, MAX_RECENT);
+            localStorage.setItem('recentSearches', JSON.stringify(updated));
+            return updated;
+        });
+    }, []);
 
-  useEffect(() => {
-    const currentLoader = loader.current;
-    const observer = new IntersectionObserver((entries) => {
-      const target = entries[0];
-      if (target.isIntersecting && hasNextPage && !isFetchingNextPage) {
-        fetchNextPage();
-      }
-    }, { threshold: 1.0 });
+    // Save on search execution (when debounced input changes to a non-empty value)
+    useEffect(() => {
+        if (debouncedInput.trim()) {
+            saveRecentSearch(debouncedInput.trim());
+        }
+    }, [debouncedInput, saveRecentSearch]);
 
-    if (currentLoader) observer.observe(currentLoader);
-    return () => { if (currentLoader) observer.unobserve(currentLoader); }
-  }, [fetchNextPage, hasNextPage, isFetchingNextPage])
+    const removeRecentSearch = (term) => {
+        setRecentSearches(prev => {
+            const updated = prev.filter(s => s !== term);
+            localStorage.setItem('recentSearches', JSON.stringify(updated));
+            return updated;
+        });
+    };
 
-  const handleChange = (value) => {
-    setInput(value)
-  }
+    const clearAllRecent = () => {
+        setRecentSearches([]);
+        localStorage.removeItem('recentSearches');
+    };
 
-  const clearSearch = () => {
-    setInput("")
-  }
+    const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } = useInfiniteSearch(debouncedInput, searchType)
+    const results = data?.pages.flatMap(page => page.results) || []
+    const showResults = !!debouncedInput
 
-  const toggleSearchType = () => {
-    setSearchType(prev => prev === 'movie' ? 'tv' : 'movie')
-  }
+    // Infinite scroll
+    useEffect(() => {
+        const currentLoader = loader.current;
+        const observer = new IntersectionObserver((entries) => {
+            if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) fetchNextPage();
+        }, { threshold: 1.0 });
+        if (currentLoader) observer.observe(currentLoader);
+        return () => { if (currentLoader) observer.unobserve(currentLoader); }
+    }, [fetchNextPage, hasNextPage, isFetchingNextPage])
 
-  return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black">
-      <Navbar />
+    const handleChange = (value) => setInput(value)
+    const clearSearch = () => { setInput(""); inputRef.current?.focus(); }
 
-      {/* Search Header */}
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-8">
-        <div className="max-w-4xl mx-auto">
-          {/* Search Title */}
-          <div className="mb-8 text-center">
-            <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">
-              Discover Movies & TV Shows
-            </h1>
-            <p className="text-gray-400">
-              Search through thousands of titles to find your next favorite
-            </p>
-          </div>
+    const handleQuickSearch = (term) => {
+        setInput(term);
+        inputRef.current?.focus();
+    }
 
-          {/* Search Bar */}
-          <div className="relative mb-12">
-            <div className="relative flex items-center">
-              <div className="absolute left-4 text-gray-400">
-                <FiSearch className="w-6 h-6" />
-              </div>
+    return (
+        <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black">
+            <Navbar />
 
-              <input
-                type="text"
-                placeholder="Search for movies or TV shows..."
-                className="w-full pl-12 pr-24 py-4 bg-gray-800/50 border-2 border-gray-700 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/30 transition-all duration-300 text-lg"
-                value={input}
-                onChange={(e) => handleChange(e.target.value)}
-                autoFocus
-              />
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-8">
+                    <SearchHeader 
+                        input={input} handleChange={handleChange} clearSearch={clearSearch}
+                        inputRef={inputRef} searchType={searchType} setSearchType={setSearchType}
+                        showResults={showResults} debouncedInput={debouncedInput}
+                        isLoading={isLoading} resultsLength={results.length}
+                    />
+            </div>
 
-              {/* Clear Button */}
-              {input && (
-                <button
-                  onClick={clearSearch}
-                  className="absolute right-20 p-2 text-gray-400 hover:text-white transition-colors duration-200"
-                  aria-label="Clear search"
-                >
-                  <IoClose className="w-6 h-6" />
-                </button>
-              )}
-
-              {/* Search Type Toggle */}
-              <button
-                onClick={toggleSearchType}
-                className={`absolute right-4 flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-300 ${searchType === 'movie'
-                  ? 'bg-cyan-400 text-gray-900 hover:bg-cyan-500'
-                  : 'bg-purple-500 text-white hover:bg-purple-600'
-                  }`}
-                aria-label={`Search ${searchType === 'movie' ? 'TV shows' : 'movies'}`}
-              >
-                {searchType === 'movie' ? (
-                  <>
-                    <IoFilm className="w-5 h-5" />
-                    <span className="font-semibold">Movies</span>
-                  </>
+            {/* Content Area */}
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8 pb-12">
+                {isLoading ? (
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 md:gap-6">
+                        {[...Array(12)].map((_, i) => (
+                            <div key={i} className="animate-pulse">
+                                <div className="w-full h-64 sm:h-72 bg-gray-800/50 rounded-xl mb-3" />
+                                <div className="h-4 bg-gray-800/50 rounded mb-2 w-3/4" />
+                                <div className="h-3 bg-gray-800/50 rounded w-1/2" />
+                            </div>
+                        ))}
+                    </div>
+                ) : showResults ? (
+                    results.length > 0 ? (
+                        <>
+                            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 md:gap-6">
+                                {results.map((item, idx) => (
+                                    <Card
+                                        key={`${item.id}-${idx}`}
+                                        item={item}
+                                        onClick={(item) => navigate('/movie_details', { state: { item } })}
+                                    />
+                                ))}
+                            </div>
+                            <div ref={loader} className="h-20 flex items-center justify-center my-8">
+                                {isFetchingNextPage && (
+                                    <div className="flex items-center gap-3">
+                                        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-cyan-400" />
+                                        <span className="text-gray-400 text-sm">Loading more...</span>
+                                    </div>
+                                )}
+                            </div>
+                        </>
+                    ) : (
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className="text-center py-20"
+                        >
+                            <div className="inline-flex items-center justify-center w-24 h-24 bg-gray-800/50 rounded-full mb-6 border border-gray-700/50">
+                                <IoSearch className="w-12 h-12 text-gray-500" />
+                            </div>
+                            <h3 className="text-2xl font-bold text-white mb-2">No results found</h3>
+                            <p className="text-gray-400 max-w-md mx-auto mb-6">
+                                We couldn't find any {searchType === 'movie' ? 'movies' : 'TV shows'} matching "{debouncedInput}". Try different keywords.
+                            </p>
+                            <button
+                                onClick={clearSearch}
+                                className="px-6 py-2 bg-cyan-500/20 text-cyan-400 rounded-lg hover:bg-cyan-500/30 transition-colors font-semibold"
+                            >
+                                Try another search
+                            </button>
+                        </motion.div>
+                    )
                 ) : (
-                  <>
-                    <IoTv className="w-5 h-5" />
-                    <span className="font-semibold">TV Shows</span>
-                  </>
+                    <SearchSuggestions 
+                        recentSearches={recentSearches} clearAllRecent={clearAllRecent}
+                        handleQuickSearch={handleQuickSearch} removeRecentSearch={removeRecentSearch}
+                    />
                 )}
-              </button>
             </div>
-          </div>
-
-          {/* Search Results Header */}
-          {showResults && (
-            <div className="mb-6 border-b border-gray-800 pb-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h2 className="text-2xl font-bold text-white">
-                    Search Results
-                    {input && (
-                      <span className="text-cyan-400 ml-2">"{input}"</span>
-                    )}
-                  </h2>
-                  <p className="text-gray-400 mt-1">
-                    {isLoading ? 'Searching...' : `${results.length} results found`}
-                  </p>
-                </div>
-
-                {/* Filter Options */}
-                <div className="flex items-center gap-2">
-                  <button className="flex items-center gap-2 px-4 py-2 bg-gray-800 hover:bg-gray-700 text-white rounded-lg transition-colors duration-200">
-                    <IoFilter className="w-5 h-5" />
-                    <span className="hidden sm:inline">Filter</span>
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
         </div>
-      </div>
-
-      {/* Search Results */}
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 pb-12">
-        {isLoading ? (
-          // Loading Skeleton
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 md:gap-6">
-            {[...Array(12)].map((_, i) => (
-              <div key={i} className="animate-pulse">
-                <div className="w-full h-64 sm:h-72 bg-gray-800 rounded-xl mb-3"></div>
-                <div className="h-4 bg-gray-800 rounded mb-2"></div>
-                <div className="h-3 w-2/3 bg-gray-800 rounded"></div>
-              </div>
-            ))}
-          </div>
-        ) : showResults ? (
-          // Search Results Grid
-          results.length > 0 ? (
-            <>
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 md:gap-6">
-                {results.map((item, idx) => (
-                  <Card
-                    key={`${item.id}-${idx}`}
-                    item={item}
-                    onClick={(item) => navigate('/movie_details', { state: { item } })}
-                  />
-                ))}
-              </div>
-              
-              {/* Infinite Scroll Loader */}
-              <div ref={loader} className="h-20 flex items-center justify-center my-8">
-                {isFetchingNextPage && (
-                  <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-cyan-400"></div>
-                )}
-              </div>
-            </>
-          ) : (
-            // No Results
-            <div className="text-center py-16">
-              <div className="inline-flex items-center justify-center w-20 h-20 bg-gray-800 rounded-full mb-6">
-                <IoSearch className="w-10 h-10 text-gray-400" />
-              </div>
-              <h3 className="text-2xl font-bold text-white mb-2">
-                No results found
-              </h3>
-              <p className="text-gray-400 max-w-md mx-auto">
-                We couldn't find any {searchType === 'movie' ? 'movies' : 'TV shows'} matching "{input}". Try different keywords or check the spelling.
-              </p>
-            </div>
-          )
-        ) : (
-          // Initial State - Empty Search
-          <div className="text-center py-16">
-            <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-gray-800 to-gray-900 rounded-full mb-6 border border-gray-700">
-              <FiSearch className="w-10 h-10 text-cyan-400" />
-            </div>
-            <h3 className="text-2xl font-bold text-white mb-2">
-              Start Searching
-            </h3>
-            <p className="text-gray-400 max-w-md mx-auto">
-              Enter a movie or TV show title in the search bar above to begin discovering content.
-            </p>
-            <div className="mt-8 flex flex-wrap justify-center gap-4">
-              <button
-                onClick={() => handleChange('Action')}
-                className="px-4 py-2 bg-gray-800 hover:bg-gray-700 text-white rounded-lg transition-colors duration-200"
-              >
-                Action
-              </button>
-              <button
-                onClick={() => handleChange('Comedy')}
-                className="px-4 py-2 bg-gray-800 hover:bg-gray-700 text-white rounded-lg transition-colors duration-200"
-              >
-                Comedy
-              </button>
-              <button
-                onClick={() => handleChange('Drama')}
-                className="px-4 py-2 bg-gray-800 hover:bg-gray-700 text-white rounded-lg transition-colors duration-200"
-              >
-                Drama
-              </button>
-              <button
-                onClick={() => handleChange('Sci-Fi')}
-                className="px-4 py-2 bg-gray-800 hover:bg-gray-700 text-white rounded-lg transition-colors duration-200"
-              >
-                Sci-Fi
-              </button>
-            </div>
-          </div>
-        )}
-      </div>
-    </div>
-  )
+    )
 }
 
 export default Search
