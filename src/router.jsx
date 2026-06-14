@@ -1,6 +1,6 @@
 import { createBrowserRouter } from "react-router-dom";
-import Movies from "./views/movie/movies";
-import MovieDetails from "./views/movieDetails/movieDetails";
+import Movies from "./views/movie/Movies";
+import MovieDetails from "./views/movieDetails/MovieDetails";
 import Search from "./views/search/Search";
 import Tv from "./views/tv/Tv";
 import Index from "./views/home/Index";
