@@ -1,7 +1,22 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { IoTimeOutline, IoClose } from 'react-icons/io5';
-import { FiTrash2, FiTrendingUp } from 'react-icons/fi';
+import { FiTrash2, FiTrendingUp, FiZap, FiSmile, FiUsers, FiMoon, FiAperture, FiHeart, FiActivity, FiStar, FiCamera, FiFeather, FiSearch, FiShield } from 'react-icons/fi';
 import { TRENDING_SEARCHES, GENRE_BROWSE } from '../constants';
+
+const genreIcons = {
+    'Action': FiZap,
+    'Comedy': FiSmile,
+    'Drama': FiUsers,
+    'Horror': FiMoon,
+    'Sci-Fi': FiAperture,
+    'Romance': FiHeart,
+    'Thriller': FiActivity,
+    'Animation': FiStar,
+    'Documentary': FiCamera,
+    'Fantasy': FiFeather,
+    'Mystery': FiSearch,
+    'War': FiShield
+};
 
 function SearchSuggestions({ recentSearches, clearAllRecent, handleQuickSearch, removeRecentSearch }) {
     return (
@@ -78,19 +93,22 @@ function SearchSuggestions({ recentSearches, clearAllRecent, handleQuickSearch, 
             <div className="max-w-4xl mx-auto">
                 <h3 className="text-lg font-bold text-white mb-4">Browse by Genre</h3>
                 <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3">
-                    {GENRE_BROWSE.map((item, i) => (
-                        <motion.button
-                            key={item.term}
-                            initial={{ opacity: 0, scale: 0.9 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            transition={{ delay: i * 0.03 }}
-                            onClick={() => handleQuickSearch(item.term)}
-                            className="flex flex-col items-center gap-2 p-4 bg-gray-800/40 hover:bg-gray-700/50 rounded-xl border border-gray-700/50 hover:border-gray-600 transition-all hover:scale-105 group"
-                        >
-                            <span className="text-2xl group-hover:scale-110 transition-transform">{item.emoji}</span>
-                            <span className="text-sm text-gray-300 font-medium">{item.term}</span>
-                        </motion.button>
-                    ))}
+                    {GENRE_BROWSE.map((item, i) => {
+                        const Icon = genreIcons[item.term];
+                        return (
+                            <motion.button
+                                key={item.term}
+                                initial={{ opacity: 0, scale: 0.9 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                transition={{ delay: i * 0.03 }}
+                                onClick={() => handleQuickSearch(item.term)}
+                                className="flex flex-col items-center gap-2 p-4 bg-gray-800/40 hover:bg-gray-700/50 rounded-xl border border-gray-700/50 hover:border-gray-600 transition-all hover:scale-105 group"
+                            >
+                                {Icon && <Icon className="w-8 h-8 text-cyan-400 group-hover:scale-110 transition-transform" />}
+                                <span className="text-sm text-gray-300 font-medium">{item.term}</span>
+                            </motion.button>
+                        );
+                    })}
                 </div>
             </div>
         </motion.div>

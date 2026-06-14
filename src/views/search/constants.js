@@ -8,16 +8,16 @@ export const TRENDING_SEARCHES = [
 ];
 
 export const GENRE_BROWSE = [
-    { term: 'Action', emoji: '💥' },
-    { term: 'Comedy', emoji: '😂' },
-    { term: 'Drama', emoji: '🎭' },
-    { term: 'Horror', emoji: '👻' },
-    { term: 'Sci-Fi', emoji: '🚀' },
-    { term: 'Romance', emoji: '❤️' },
-    { term: 'Thriller', emoji: '🔪' },
-    { term: 'Animation', emoji: '✨' },
-    { term: 'Documentary', emoji: '🎬' },
-    { term: 'Fantasy', emoji: '🧙' },
-    { term: 'Mystery', emoji: '🔍' },
-    { term: 'War', emoji: '⚔️' },
+    { term: 'Action' },
+    { term: 'Comedy' },
+    { term: 'Drama' },
+    { term: 'Horror' },
+    { term: 'Sci-Fi' },
+    { term: 'Romance' },
+    { term: 'Thriller' },
+    { term: 'Animation' },
+    { term: 'Documentary' },
+    { term: 'Fantasy' },
+    { term: 'Mystery' },
+    { term: 'War' },
 ];
