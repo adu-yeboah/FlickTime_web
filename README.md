@@ -1,30 +1,38 @@
-# FlickTime - Movie Discovery Platform
+# FlickTime - Cinematic Discovery Platform
 
-FlickTime is a modern, responsive web application designed for discovering movies and TV shows. It interfaces with the TMDB API to provide real-time data, featuring a dynamic watchlist, advanced search capabilities, and a polished user interface with smooth animations.
+FlickTime is a modern, blazing-fast web application designed for discovering movies and TV shows. It interfaces with the TMDB API to provide real-time data, featuring a dynamic watchlist, advanced discovery capabilities, and a highly polished user interface reminiscent of top-tier streaming services.
 
-## Features
+## 🚀 Key Features
 
-- **Movie & TV Discovery**: Browse popular, top-rated, and trending content.
-- **Detailed Information**: View cast, crew, production details, and recommendations.
-- **Watchlist Management**: Add or remove titles from a personal watchlist.
-- **Search Functionality**: robust search across the entire TMDB database.
-- **Responsive Design**: Fully optimized for mobile, tablet, and desktop devices.
-- **Mood Matcher**: Experimental feature to find movies based on current mood.
-- **Smooth Animations**: Professional transitions and micro-interactions using Framer Motion.
-- **Robust Error Handling**: Graceful fallbacks for missing images and network states.
+### 🎨 Premium UI & Dynamic Theming
+- **Dynamic Poster Theming**: The application dynamically extracts dominant colors from movie posters (using `fast-average-color`) and seamlessly themes the entire Details page—including buttons, box-shadows, icons, and gradients.
+- **Cinematic Micro-Animations**: Professional, GPU-accelerated transitions and micro-interactions utilizing `framer-motion`.
+- **YouTube Trailer Modal**: Watch high-definition trailers right inside the app through a sleek, animated modal iframe.
 
-## Technology Stack
+### 🔍 Discovery Engine
+- **Advanced Filtering Sidebar**: Easily discover new content by filtering TV shows and Movies by Genre, Release Year, Minimum Rating, and Popularity.
+- **Smart Local Recommendations**: The Home page dynamically generates a "Because you added [X]" section based on items currently saved in your Watchlist.
+- **Recently Viewed History**: Never lose your place. The app securely tracks your browsing history locally and surfaces your "Recently Viewed" items on the Home page.
+- **Where to Watch**: Instantly see which streaming providers (Netflix, Hulu, Prime Video, etc.) currently have a title available to stream, rent, or buy in your region.
 
-- **Frontend**: React.js, Vite
-- **Styling**: TailwindCSS, Sass
-- **State Management**: React Context API
-- **Routing**: React Router DOM
+### ⚡ Performance & Architecture
+- **React Query Migration**: We utilize `@tanstack/react-query` for automatic caching, background data fetching, and vastly improved API performance.
+- **True Infinite Scrolling**: Utilizing the `IntersectionObserver` API, the Movies, TV, and Search pages feature seamless, continuous scrolling without pagination buttons.
+- **Progressive Web App (PWA)**: Install FlickTime directly onto your mobile or desktop device for a native-app-like experience.
+- **Absolute Path Aliasing**: Clean, maintainable imports utilizing `@/` path aliasing across the entire codebase.
+
+## 🛠 Technology Stack
+
+- **Frontend Core**: React.js, Vite
+- **State & Data Fetching**: `@tanstack/react-query`, React Context API
+- **Styling**: TailwindCSS, Vanilla CSS
 - **Animations**: Framer Motion
+- **Color Extraction**: `fast-average-color`
+- **Routing**: React Router DOM
 - **Icons**: React Icons, Lucide React
-- **Testing**: Vitest, React Testing Library
-- **CI/CD**: GitHub Actions
+- **PWA**: `vite-plugin-pwa`
 
-## Installation and Setup
+## ⚙️ Installation and Setup
 
 1. **Clone the repository**
    ```bash
@@ -48,38 +56,18 @@ FlickTime is a modern, responsive web application designed for discovering movie
    npm run dev
    ```
 
-## Scripts
+## 📜 Scripts
 
-- `npm run dev`: Starts the development server.
-- `npm run build`: Builds the production-ready application.
+- `npm run dev`: Starts the Vite development server.
+- `npm run build`: Builds the production-ready application and generates PWA assets.
 - `npm run preview`: Previews the production build locally.
 - `npm run lint`: Runs ESLint to check for code quality issues.
 - `npm test`: Runs the test suite using Vitest.
-- `npm run test:ui`: Opens the interactive test UI.
 
-## Testing and Quality Assurance
+## 🧪 Architecture Notes
 
-This project maintains code quality through:
-
-- **Unit Testing**: Components are tested using Vitest and React Testing Library.
-- **Linting**: ESLint is configured to enforce code standards.
-- **CI Pipeline**: Automated workflows check every commit for:
-  - Linting errors
-  - Test failures
-  - Build integrity
-  - Dependency vulnerabilities
-
-## Implementation Details
-
-### Architecture
-The application is structured using a feature-based architecture. Key components include:
-- **Views**: Main page layouts (Home, MovieDetails, Watchlist).
-- **Components**: Reusable UI elements (Card, Banner, MovieImage).
-- **Context**: Global state management for API configuration and Watchlist data.
-
-### Performance
-Performance is optimized through:
-- Image optimization and lazy loading.
-- Custom fallback components to prevent layout shifts.
-- Efficient state updates and re-render optimization.
-- Framer Motion "layout" props for GPU-accelerated layout transitions.
+The application follows a modular, feature-based architecture:
+- **`src/api/queries.js`**: Contains all modular React Query hooks (`useMovieDetails`, `useInfiniteMovies`, etc.) responsible for data fetching and caching.
+- **`src/context/`**: Manages local-storage synchronized state such as the `WatchlistContext` and `HistoryContext`.
+- **`src/components/`**: Houses heavily reusable, animated UI components like the `Card` component which handles its own watchlist logic and history recording.
+- **`src/views/`**: Page-level components handling layout and advanced logic (e.g., the complex Advanced Discovery logic within `Movies.jsx` and `Tv.jsx`).

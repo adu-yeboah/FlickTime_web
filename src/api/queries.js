@@ -87,6 +87,7 @@ export const useInfiniteSearch = (query, searchType) => {
                 return lastPage.page + 1;
             }
             return undefined;
+        },
     });
 };
 
@@ -97,6 +98,7 @@ export const useMovieDetails = (id, type) => {
             if (!id || !type) return null;
             const data = await fetchFromTMDB(`/${type}/${id}?append_to_response=credits,recommendations,videos,watch/providers`);
             return data;
+        },
     });
 };
 
